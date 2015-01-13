@@ -29,7 +29,7 @@ public class PaymentProcessStateListener implements IPaymentProcessStateListener
                 Log.e(TAG, "An error occured", e);
 
                 if (e instanceof BusinessException) {
-                    BusinessException be = (BusinessException)e;
+                    BusinessException be = (BusinessException) e;
                     int errorCode = be.getErrorCode(); // Datatrans error code if needed
                     Log.e(TAG, "errorCode = " + errorCode);
                 }
