@@ -1,17 +1,27 @@
 package ch.datatrans.android.sample;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import ch.datatrans.payment.Payment;
+import ch.datatrans.payment.android.PaymentProcessAndroid;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity implements View.OnClickListener {
+
+    private PaymentProcessStateListener paymentProcessStateListener = new PaymentProcessStateListener();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button sendButton = (Button) findViewById(R.id.send_button);
+        sendButton.setOnClickListener(this);
     }
 
 
@@ -35,5 +45,23 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String merchantId = "1100004450"; // Datatrans merchant ID
+        String refno = "968927"; // supplied by merchant's server
+        String currencyCode = "CHF";
+        int amount = 1000; // 10.-
+        String signature = "30916165706580013";
+
+        Payment payment = new Payment(merchantId, refno, currencyCode, amount, null, null);
+
+        PaymentProcessAndroid ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment);
+
+        ppa.setTestingEnabled(true);
+        ppa.addStateListener(paymentProcessStateListener);
+        ppa.start();
+
     }
 }
