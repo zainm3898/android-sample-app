@@ -23,6 +23,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.rengwuxian.materialedittext:library:1.8.1'
-    compile 'com.android.support:support-v7:15.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.getbase:floatingactionbutton:1.5.1'
     compile files('libs/dtapl-1.6.1.jar')
 }

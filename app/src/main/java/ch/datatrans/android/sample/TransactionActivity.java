@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import ch.datatrans.payment.AliasPaymentMethod;
 import ch.datatrans.payment.BusinessException;
 import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentProcessState;
