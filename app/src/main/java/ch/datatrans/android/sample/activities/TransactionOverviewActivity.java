@@ -50,6 +50,7 @@ public class TransactionOverviewActivity extends ActionBarActivity implements Vi
     protected void onResume() {
         super.onResume();
         transactionsDataSource.open();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

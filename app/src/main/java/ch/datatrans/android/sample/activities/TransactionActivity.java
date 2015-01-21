@@ -119,14 +119,13 @@ public class TransactionActivity extends ActionBarActivity {
                 LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View view = inflater.inflate(R.layout.dialog_edit_credit_card_details, null);
 
-
-
                 setText(R.id.et_card_number, scanResult.cardNumber, view);
                 setText(R.id.et_expiry_month, scanResult.isExpiryValid() ? String.valueOf(scanResult.expiryMonth) : "", view);
                 setText(R.id.et_expiry_year, scanResult.isExpiryValid() ? String.valueOf(scanResult.expiryYear) : "", view);
                 setText(R.id.et_cvv, scanResult.cvv, view);
 
                 MaterialDialog dialog = new MaterialDialog.Builder(this)
+                        .icon(getResources().getDrawable(R.drawable.ic_credit_card))
                         .title(scanResult.getCardType().name)
                         .customView(view, true)
                         .autoDismiss(false)
@@ -161,7 +160,6 @@ public class TransactionActivity extends ActionBarActivity {
                 Toast.makeText(this, "Scan was canceled!", Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     private void startTransaction(TransactionDetails transactionDetails) {
