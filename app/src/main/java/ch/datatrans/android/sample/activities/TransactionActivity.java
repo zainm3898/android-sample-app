@@ -1,11 +1,13 @@
 package ch.datatrans.android.sample.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +20,10 @@ import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.TransactionDetails;
 import ch.datatrans.android.sample.TransactionsDataSource;
-import ch.datatrans.payment.BusinessException;
 import ch.datatrans.payment.Payment;
+import ch.datatrans.payment.PaymentMethod;
+import ch.datatrans.payment.PaymentMethodCreditCard;
+import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
 import ch.datatrans.payment.android.IPaymentProcessStateListener;
 import ch.datatrans.payment.android.PaymentProcessAndroid;
@@ -73,14 +77,14 @@ public class TransactionActivity extends ActionBarActivity {
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                                 switch (which) {
                                     case 0: // standard mode
-                                        startTransaction();
+                                        startTransaction(getPaymentInformation());
                                         break;
                                     case 1: // hidden mode - launch card.io
 
                                         Intent scanIntent = new Intent(TransactionActivity.this, CardIOActivity.class);
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true); // default: true
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true); // default: false
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, false);
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, false); // default: true
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, true);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_GUIDE_COLOR, 0xFF76B4CF);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // default: false
                                         startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
@@ -109,43 +113,62 @@ public class TransactionActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == MY_SCAN_REQUEST_CODE) {
-            String resultDisplayStr;
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
-                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+                final CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+
+                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View view = inflater.inflate(R.layout.dialog_edit_credit_card_details, null);
 
 
-                // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
-                resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
 
-                // Do something with the raw number, e.g.:
-                // myService.setCardNumber( scanResult.cardNumber );
+                setText(R.id.et_card_number, scanResult.cardNumber, view);
+                setText(R.id.et_expiry_month, scanResult.isExpiryValid() ? String.valueOf(scanResult.expiryMonth) : "", view);
+                setText(R.id.et_expiry_year, scanResult.isExpiryValid() ? String.valueOf(scanResult.expiryYear) : "", view);
+                setText(R.id.et_cvv, scanResult.cvv, view);
 
-                if (scanResult.isExpiryValid()) {
-                    resultDisplayStr += "Expiration Date: " + scanResult.expiryMonth + "/" + scanResult.expiryYear + "\n";
-                }
+                MaterialDialog dialog = new MaterialDialog.Builder(this)
+                        .title(scanResult.getCardType().name)
+                        .customView(view, true)
+                        .autoDismiss(false)
+                        .positiveText(R.string.cc_details_ok)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(scanResult.getCardType().name());
 
-                if (scanResult.cvv != null) {
-                    // Never log or display a CVV
-                    resultDisplayStr += "CVV has " + scanResult.cvv.length() + " digits.\n";
-                }
+                                try {
+                                    PaymentMethod paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
+                                            getText(R.id.et_card_number, view),
+                                            Integer.parseInt(getText(R.id.et_expiry_year, view)),
+                                            Integer.parseInt(getText(R.id.et_expiry_month, view)),
+                                            Integer.parseInt(getText(R.id.et_cvv, view)),
+                                            "Test Payment");
 
-                if (scanResult.postalCode != null) {
-                    resultDisplayStr += "Postal Code: " + scanResult.postalCode + "\n";
-                }
+                                    dialog.dismiss();
+                                    startTransaction(getPaymentInformation(), paymentMethod);
+                                } catch (Exception e) {
+                                    Toast.makeText(TransactionActivity.this, "Invalid credit card data!", Toast.LENGTH_LONG).show();
+
+                                }
+
+                            }
+                        })
+                        .build();
+
+                dialog.show();
+
+            } else {
+                Toast.makeText(this, "Scan was canceled!", Toast.LENGTH_LONG).show();
             }
-            else {
-                resultDisplayStr = "Scan was canceled.";
-            }
-
-            Toast.makeText(this, resultDisplayStr, Toast.LENGTH_LONG).show();
-
         }
 
     }
 
-    private void startTransaction() {
-        transactionDetails = createPaymentInformation();
+    private void startTransaction(TransactionDetails transactionDetails) {
+        startTransaction(transactionDetails, null);
+    }
 
+    private void startTransaction(TransactionDetails transactionDetails, PaymentMethod paymentMethod) {
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
@@ -154,14 +177,18 @@ public class TransactionActivity extends ActionBarActivity {
                 null);
 
         PaymentProcessAndroid ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment);
-        ppa.getPaymentOptions().setCertificatePinning(true);
+
+        if(paymentMethod != null) {
+            ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment, paymentMethod);
+        }
 
         ppa.setTestingEnabled(true);
+        this.transactionDetails = transactionDetails;
         ppa.addStateListener(paymentProcessStateListener);
         ppa.start();
     }
 
-    private TransactionDetails createPaymentInformation() {
+    private TransactionDetails getPaymentInformation() {
         String merchantID = ((EditText) findViewById(R.id.et_merchant_id)).getText().toString();
         String amount = ((EditText) findViewById(R.id.et_amount)).getText().toString();
         String currency = ((EditText) findViewById(R.id.et_currency)).getText().toString();
@@ -176,8 +203,24 @@ public class TransactionActivity extends ActionBarActivity {
     }
 
     private void setText(int id, String text) {
-        EditText editText = (EditText) findViewById(id);
+        setText(id, text, null);
+    }
+
+    private void setText(int id, String text, View view) {
+        EditText editText;
+
+        if (view == null) {
+            editText = (EditText) findViewById(id);
+        } else {
+            editText = (EditText) view.findViewById(id);
+        }
+
         editText.setText(text);
+    }
+
+    private String getText(int id, View view) {
+        // TODO - nullcheck, instanceOf
+        return ((EditText)view.findViewById(id)).getText().toString();
     }
 
     private void autofillPaymentInformation() {

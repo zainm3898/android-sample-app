@@ -16,6 +16,8 @@
     <string name="authorisation_method">Authorisation method</string>
     <string name="authorisation_choose">Choose</string>
 
+    <string name="cc_details_ok">Pay</string>
+
     <string-array
         name="authorisation_methods">
         <item>Standard mode</item>

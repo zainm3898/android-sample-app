@@ -22,24 +22,52 @@
         android:hint="Card number"
         android:inputType="number"
         android:textColorHint="#B7B8B8"
-        app:floatingLabel="normal"
-        />
+        app:floatingLabel="normal" />
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/et_expiry"
+    <LinearLayout
+        android:id="@+id/ll_expiry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/et_card_number"
-        android:paddingTop="5dp"
-        android:ems="10"
-        android:hint="Amount"
-        android:inputType="number"
-        app:floatingLabel="normal"
-        android:textColorHint="#B7B8B8" />
+        android:weightSum="2">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/et_expiry_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/et_card_number"
+            android:ems="10"
+            android:maxLength="2"
+            android:hint="Expiry month"
+            android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:inputType="number"
+            android:paddingTop="5dp"
+            android:textColorHint="#B7B8B8"
+            app:floatingLabel="normal"
+            android:layout_toStartOf="@+id/et_expiry_year"
+            android:layout_toLeftOf="@+id/et_expiry_year" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/et_expiry_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:maxLength="2"
+            android:hint="Expiry year"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:layout_marginLeft="2dp"
+            android:paddingTop="5dp"
+            android:textColorHint="#B7B8B8"
+            app:floatingLabel="normal"
+            android:layout_below="@+id/et_card_number"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        </LinearLayout>
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/et_cvv"
@@ -47,14 +75,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/et_expiry"
+        android:layout_below="@+id/ll_expiry"
         android:ems="10"
-        android:hint="Currency"
-        android:inputType="textCapCharacters"
-        app:floatingLabel="normal"
-        android:textColorHint="#B7B8B8" />
-
-
-
-    </RelativeLayout>
+        android:hint="CVV"
+        android:inputType="number"
+        android:textColorHint="#B7B8B8"
+        app:floatingLabel="normal" />
+</RelativeLayout>
 
