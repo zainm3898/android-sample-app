@@ -1,4 +1,4 @@
-package ch.datatrans.android.sample;
+package ch.datatrans.android.sample.models;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

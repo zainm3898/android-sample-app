@@ -1,4 +1,4 @@
-package ch.datatrans.android.sample;
+package ch.datatrans.android.sample.persistence;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

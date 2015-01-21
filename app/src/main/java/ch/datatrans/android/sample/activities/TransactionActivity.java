@@ -18,10 +18,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
-import ch.datatrans.android.sample.TransactionDetails;
-import ch.datatrans.android.sample.TransactionsDataSource;
+import ch.datatrans.android.sample.models.TransactionDetails;
+import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.Payment;
-import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
@@ -37,7 +36,6 @@ public class TransactionActivity extends ActionBarActivity {
 
     private TransactionsDataSource transactionsDataSource;
     private TransactionDetails transactionDetails;
-
     private PaymentProcessStateListener paymentProcessStateListener = new PaymentProcessStateListener();
 
     interface DefaultPaymentInformation {
@@ -55,7 +53,6 @@ public class TransactionActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         transactionsDataSource = new TransactionsDataSource(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,15 +77,13 @@ public class TransactionActivity extends ActionBarActivity {
                                         startTransaction(getPaymentInformation());
                                         break;
                                     case 1: // hidden mode - launch card.io
-
                                         Intent scanIntent = new Intent(TransactionActivity.this, CardIOActivity.class);
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, false); // default: true
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, false);
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, true);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_GUIDE_COLOR, 0xFF76B4CF);
-                                        scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true); // default: false
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true);
                                         startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
-
                                         break;
                                 }
                             }
@@ -136,7 +131,7 @@ public class TransactionActivity extends ActionBarActivity {
                                 PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(scanResult.getCardType().name());
 
                                 try {
-                                    PaymentMethod paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
+                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
                                             getText(R.id.et_card_number, view),
                                             Integer.parseInt(getText(R.id.et_expiry_year, view)),
                                             Integer.parseInt(getText(R.id.et_expiry_month, view)),
@@ -166,7 +161,7 @@ public class TransactionActivity extends ActionBarActivity {
         startTransaction(transactionDetails, null);
     }
 
-    private void startTransaction(TransactionDetails transactionDetails, PaymentMethod paymentMethod) {
+    private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard paymentMethod) {
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
@@ -180,8 +175,10 @@ public class TransactionActivity extends ActionBarActivity {
             ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment, paymentMethod);
         }
 
-        ppa.setTestingEnabled(true);
         this.transactionDetails = transactionDetails;
+
+        ppa.setTestingEnabled(true);
+        ppa.getPaymentOptions().setCertificatePinning(true);
         ppa.addStateListener(paymentProcessStateListener);
         ppa.start();
     }
@@ -237,16 +234,16 @@ public class TransactionActivity extends ActionBarActivity {
 
             switch (state) {
                 case COMPLETED:
-                    saveTransaction(state);
                     showToast("Transaction completed successfully!");
+                    saveTransaction(state);
                     break;
                 case CANCELED:
-                    saveTransaction(state);
                     showToast("Transaction canceled!");
+                    saveTransaction(state);
                     break;
                 case ERROR:
-                    saveTransaction(state);
                     showToast("An error occurred!");
+                    saveTransaction(state);
                     break;
             }
         }

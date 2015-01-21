@@ -1,4 +1,4 @@
-package ch.datatrans.android.sample;
+package ch.datatrans.android.sample.persistence;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import ch.datatrans.android.sample.models.Transaction;
+import ch.datatrans.android.sample.models.TransactionDetails;
 
 /**
  * Created by domi on 1/15/15.
@@ -30,7 +33,7 @@ public class TransactionsDataSource {
     }
 
     public void open() throws SQLException {
-        if(database == null) {
+        if(database == null || !database.isOpen()) {
             database = dbHelper.getWritableDatabase();
         }
     }
@@ -46,6 +49,8 @@ public class TransactionsDataSource {
         values.put(TransactionsSQLiteHelper.COLUMN_CURRENCY , transactionDetails.getCurrency());
         values.put(TransactionsSQLiteHelper.COLUMN_AMOUNT , transactionDetails.getAmount());
         values.put(TransactionsSQLiteHelper.COLUMN_STATUS , transactionDetails.getStatus());
+
+
         database.insert(TransactionsSQLiteHelper.TABLE_TRANSACTIONS, null, values);
     }
 

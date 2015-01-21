@@ -8,9 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import ch.datatrans.android.sample.R;
-import ch.datatrans.android.sample.TransactionOverviewListAdapter;
-import ch.datatrans.android.sample.TransactionsDataSource;
-import ch.datatrans.android.sample.activities.TransactionActivity;
+import ch.datatrans.android.sample.lists.TransactionOverviewListAdapter;
+import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 
 /**
  * Created by domi on 1/13/15.
@@ -27,6 +26,7 @@ public class TransactionOverviewActivity extends ActionBarActivity implements Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_overview_empty);
+
         setTitle("Transactions overview");
 
         transactionsDataSource = new TransactionsDataSource(this);
@@ -50,7 +50,6 @@ public class TransactionOverviewActivity extends ActionBarActivity implements Vi
     protected void onResume() {
         super.onResume();
         transactionsDataSource.open();
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
