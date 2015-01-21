@@ -5,16 +5,17 @@ import java.io.Serializable;
 /**
  * Created by domi on 1/12/15.
  */
-public class PaymentInformation implements Serializable {
+public class TransactionDetails implements Serializable {
 
     private String merchantId;
     private int amount;
     private String currency;
     private String refrenceNumber;
     private String sign;
+    private String status;
 
     // TODO - builder
-    public PaymentInformation(String merchantId, int amount, String currency, String refrenceNumber, String sign) {
+    public TransactionDetails(String merchantId, int amount, String currency, String refrenceNumber, String sign) {
         this.merchantId = merchantId;
         this.amount = amount;
         this.currency = currency;
@@ -62,13 +63,20 @@ public class PaymentInformation implements Serializable {
         this.sign = sign;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PaymentInformation that = (PaymentInformation) o;
+        TransactionDetails that = (TransactionDetails) o;
 
         if (amount != that.amount) return false;
         if (currency != null ? !currency.equals(that.currency) : that.currency != null)
@@ -78,6 +86,7 @@ public class PaymentInformation implements Serializable {
         if (refrenceNumber != null ? !refrenceNumber.equals(that.refrenceNumber) : that.refrenceNumber != null)
             return false;
         if (sign != null ? !sign.equals(that.sign) : that.sign != null) return false;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
 
         return true;
     }
@@ -89,6 +98,7 @@ public class PaymentInformation implements Serializable {
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
         result = 31 * result + (refrenceNumber != null ? refrenceNumber.hashCode() : 0);
         result = 31 * result + (sign != null ? sign.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 }

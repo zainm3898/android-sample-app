@@ -26,5 +26,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.android.support:support-v4:21.0.+'
     compile 'com.getbase:floatingactionbutton:1.5.1'
-    compile files('libs/dtapl-1.6.1.jar')
+    compile 'com.afollestad:material-dialogs:0.6.1.2'
+    compile fileTree(dir: 'libs', include: '*.jar')
 }

@@ -64,8 +64,22 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="#ededed"
+        android:background="#dbdbdb"
         android:layout_below="@+id/tv_currency"
         android:layout_alignRight="@+id/tv_date"
         android:layout_alignEnd="@+id/tv_date" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STATUS"
+        android:textSize="10dp"
+        android:background="@drawable/tv_rounded_corners"
+        android:padding="3dp"
+        android:layout_marginRight="16dp"
+        android:textColor="#ffffff"
+        android:id="@+id/tv_status"
+        android:layout_alignBottom="@+id/tv_reference_number"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

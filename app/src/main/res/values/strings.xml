@@ -13,4 +13,13 @@
     <string name="nw_error_title">Connection Error</string>
     <string name="nw_indicator_message">Transmitting...</string>
 
+    <string name="authorisation_method">Authorisation method</string>
+    <string name="authorisation_choose">Choose</string>
+
+    <string-array
+        name="authorisation_methods">
+        <item>Standard mode</item>
+        <item>Hidden mode (card.io)</item>
+    </string-array>
+
 </resources>
