@@ -83,6 +83,7 @@ public class TransactionActivity extends ActionBarActivity {
                                         scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, true);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_GUIDE_COLOR, 0xFF76B4CF);
                                         scanIntent.putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true);
+                                        scanIntent.putExtra(CardIOActivity.EXTRA_HIDE_CARDIO_LOGO, true);
                                         startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
                                         break;
                                 }
@@ -214,7 +215,6 @@ public class TransactionActivity extends ActionBarActivity {
     }
 
     private String getText(int id, View view) {
-        // TODO - nullcheck, instanceOf
         return ((EditText)view.findViewById(id)).getText().toString();
     }
 

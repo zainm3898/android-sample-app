@@ -8,8 +8,8 @@ android {
         applicationId "ch.datatrans.android.sample"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.0.3"
     }
     buildTypes {
         release {
@@ -20,12 +20,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.rengwuxian.materialedittext:library:1.8.1'
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.android.support:support-v4:21.0.+'
     compile 'com.getbase:floatingactionbutton:1.5.1'
     compile 'com.afollestad:material-dialogs:0.6.1.2'
+    compile 'io.card:android-sdk:4.0.0'
     compile fileTree(dir: 'libs', include: '*.jar')
 }
