@@ -10,12 +10,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.datatrans.android.sample.models.Transaction;
-import ch.datatrans.android.sample.models.TransactionDetails;
+import ch.datatrans.android.sample.model.Transaction;
+import ch.datatrans.android.sample.model.TransactionDetails;
 
-/**
- * Created by domi on 1/15/15.
- */
 public class TransactionsDataSource {
 
     private SQLiteDatabase database;

@@ -16,5 +16,4 @@
         app:showAsAction="never"
         android:showAsAction="never"
         tools:ignore="AppCompatResource" />
-
 </menu>

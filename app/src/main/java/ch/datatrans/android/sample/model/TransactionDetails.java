@@ -1,10 +1,7 @@
-package ch.datatrans.android.sample.models;
+package ch.datatrans.android.sample.model;
 
 import java.io.Serializable;
 
-/**
- * Created by domi on 1/12/15.
- */
 public class TransactionDetails implements Serializable {
 
     private String merchantId;

@@ -1,4 +1,4 @@
-package ch.datatrans.android.sample.lists;
+package ch.datatrans.android.sample.adapters;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -10,11 +10,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import ch.datatrans.android.sample.R;
-import ch.datatrans.android.sample.models.Transaction;
+import ch.datatrans.android.sample.model.Transaction;
 
-/**
- * Created by domi on 1/13/15.
- */
 public class TransactionOverviewListAdapter extends RecyclerView.Adapter<TransactionOverviewListAdapter.ViewHolder> {
 
     private List<Transaction> mDataset;

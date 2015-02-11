@@ -1,11 +1,8 @@
-package ch.datatrans.android.sample.models;
+package ch.datatrans.android.sample.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-/**
- * Created by domi on 1/15/15.
- */
 public class Transaction {
 
     private long merchantId;

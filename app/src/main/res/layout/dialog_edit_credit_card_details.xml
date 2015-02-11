@@ -10,7 +10,6 @@
     tools:context=".TransactionActivity">
     >
 
-
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/et_card_number"
         android:layout_width="match_parent"

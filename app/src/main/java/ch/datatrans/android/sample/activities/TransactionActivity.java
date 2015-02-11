@@ -18,7 +18,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
-import ch.datatrans.android.sample.models.TransactionDetails;
+import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentMethodCreditCard;

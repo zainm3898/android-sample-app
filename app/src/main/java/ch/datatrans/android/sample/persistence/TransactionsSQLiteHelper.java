@@ -5,9 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Created by domi on 1/15/15.
- */
 public class TransactionsSQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_TRANSACTIONS = "transactions";
