@@ -12,3 +12,4 @@ $ adb install -r app/build/outputs/apk/app-debug.apk
 - [Dev guide](https://pilot.datatrans.biz/showcase/doc/Android_Developers_Manual.pdf)
 - [Release notes](https://pilot.datatrans.biz/showcase/doc/Android_Release_Notes.pdf)
 
+Note: Please don't use the code from this sample in production.
