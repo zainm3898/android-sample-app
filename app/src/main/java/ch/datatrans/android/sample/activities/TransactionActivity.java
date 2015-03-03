@@ -43,6 +43,7 @@ public class TransactionActivity extends ActionBarActivity {
         public static final String AMOUNT = "10";
         public static final String CURRENCY = "CHF";
         public static final String REFERENCE_NUMBER = "968927";
+        public static final String SIGN = "30916165706580013";
     }
 
     @Override
@@ -223,6 +224,7 @@ public class TransactionActivity extends ActionBarActivity {
         setText(R.id.et_amount, DefaultPaymentInformation.AMOUNT);
         setText(R.id.et_currency, DefaultPaymentInformation.CURRENCY);
         setText(R.id.et_refrence_number, DefaultPaymentInformation.REFERENCE_NUMBER);
+        setText(R.id.et_sign, DefaultPaymentInformation.SIGN);
     }
 
     class PaymentProcessStateListener implements IPaymentProcessStateListener {
