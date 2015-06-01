@@ -8,6 +8,9 @@ sample android app which integrates the datatrans library
 $ ./gradlew assemble
 $ adb install -r app/build/outputs/apk/app-debug.apk
 ```
+### APK
+[datatrans-android-sample.apk](https://github.com/datatrans/android-sample-app/raw/master/static/datatrans-android-sample.apk)
+
 ### Documentation
 - [Dev guide](https://pilot.datatrans.biz/showcase/doc/Android_Developers_Manual.pdf)
 - [Release notes](https://pilot.datatrans.biz/showcase/doc/Android_Release_Notes.pdf)
