@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.model.TransactionDetails;
@@ -24,6 +27,7 @@ import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
+import ch.datatrans.payment.android.DisplayContext;
 import ch.datatrans.payment.android.IPaymentProcessStateListener;
 import ch.datatrans.payment.android.PaymentProcessAndroid;
 import io.card.payment.CardIOActivity;
@@ -164,17 +168,21 @@ public class TransactionActivity extends ActionBarActivity {
     }
 
     private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard paymentMethod) {
+        Map<String, String> merchantProperties = new HashMap<>();
+        merchantProperties.put("theme", "DT2015");
+
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
                 transactionDetails.getAmount(),
                 transactionDetails.getSign(),
-                null);
+                merchantProperties);
 
-        PaymentProcessAndroid ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment);
+        DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
+        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
 
         if(paymentMethod != null) {
-            ppa = new PaymentProcessAndroid(new ResourceProvider(), this, payment, paymentMethod);
+            ppa = new PaymentProcessAndroid(dc, payment, paymentMethod);
         }
 
         this.transactionDetails = transactionDetails;
@@ -245,6 +253,7 @@ public class TransactionActivity extends ActionBarActivity {
                     break;
                 case ERROR:
                     showToast("An error occurred!");
+                    Log.e(TAG, paymentProcess.getException().getMessage());
                     saveTransaction(state);
                     break;
             }
