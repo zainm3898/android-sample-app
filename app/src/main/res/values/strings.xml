@@ -20,8 +20,8 @@
 
     <string-array
         name="authorisation_methods">
-        <item>Standard mode</item>
-        <item>Hidden mode (card.io)</item>
+        <item>Redirect mode</item>
+        <item>Scan card (card.io)</item>
     </string-array>
 
 </resources>
