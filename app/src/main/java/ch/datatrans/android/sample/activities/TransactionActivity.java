@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,7 +24,9 @@ import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
+import ch.datatrans.payment.AliasPaymentMethodPostFinanceCard;
 import ch.datatrans.payment.Payment;
+import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
@@ -43,11 +46,11 @@ public class TransactionActivity extends ActionBarActivity {
     private PaymentProcessStateListener paymentProcessStateListener = new PaymentProcessStateListener();
 
     interface DefaultPaymentInformation {
-        public static final String MERCHANT_ID = "1100004450";
-        public static final String AMOUNT = "10";
-        public static final String CURRENCY = "CHF";
-        public static final String REFERENCE_NUMBER = "968927";
-        public static final String SIGN = "30916165706580013";
+        String MERCHANT_ID = "1100004450";
+        String AMOUNT = "10";
+        String CURRENCY = "CHF";
+        String REFERENCE_NUMBER = "968927";
+        String SIGN = "30916165706580013";
     }
 
     @Override
@@ -169,7 +172,6 @@ public class TransactionActivity extends ActionBarActivity {
 
     private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard paymentMethod) {
         Map<String, String> merchantProperties = new HashMap<>();
-        merchantProperties.put("theme", "DT2015");
 
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
@@ -186,6 +188,8 @@ public class TransactionActivity extends ActionBarActivity {
         }
 
         this.transactionDetails = transactionDetails;
+
+        ppa.getPaymentOptions().setRecurringPayment(true);
 
         ppa.setTestingEnabled(true);
         ppa.getPaymentOptions().setCertificatePinning(true);
