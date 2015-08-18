@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,9 +23,7 @@ import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
-import ch.datatrans.payment.AliasPaymentMethodPostFinanceCard;
 import ch.datatrans.payment.Payment;
-import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
@@ -77,9 +74,9 @@ public class TransactionActivity extends ActionBarActivity {
                 new MaterialDialog.Builder(this)
                         .title(R.string.authorisation_method)
                         .items(R.array.authorisation_methods)
-                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                                 switch (which) {
                                     case 0: // standard mode
                                         startTransaction(getPaymentInformation());
@@ -95,6 +92,7 @@ public class TransactionActivity extends ActionBarActivity {
                                         startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
                                         break;
                                 }
+                                return false;
                             }
                         })
                         .positiveText(R.string.authorisation_choose)
