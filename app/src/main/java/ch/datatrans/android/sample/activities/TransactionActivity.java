@@ -24,6 +24,7 @@ import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.Payment;
+import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
@@ -186,8 +187,6 @@ public class TransactionActivity extends ActionBarActivity {
         }
 
         this.transactionDetails = transactionDetails;
-
-        ppa.getPaymentOptions().setRecurringPayment(true);
 
         ppa.setTestingEnabled(true);
         ppa.getPaymentOptions().setCertificatePinning(true);
