@@ -10,13 +10,15 @@ public class TransactionDetails implements Serializable {
     private String refrenceNumber;
     private String sign;
     private String status;
+    private String paymentMethod;
 
     // TODO - builder
-    public TransactionDetails(String merchantId, int amount, String currency, String refrenceNumber, String sign) {
+    public TransactionDetails(String merchantId, int amount, String currency, String refrenceNumber, String paymentMethod, String sign) {
         this.merchantId = merchantId;
         this.amount = amount;
         this.currency = currency;
         this.refrenceNumber = refrenceNumber;
+        this.paymentMethod = paymentMethod;
         this.sign = sign;
     }
 
@@ -68,6 +70,15 @@ public class TransactionDetails implements Serializable {
         this.status = status;
     }
 
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,16 +87,16 @@ public class TransactionDetails implements Serializable {
         TransactionDetails that = (TransactionDetails) o;
 
         if (amount != that.amount) return false;
-        if (currency != null ? !currency.equals(that.currency) : that.currency != null)
-            return false;
         if (merchantId != null ? !merchantId.equals(that.merchantId) : that.merchantId != null)
+            return false;
+        if (currency != null ? !currency.equals(that.currency) : that.currency != null)
             return false;
         if (refrenceNumber != null ? !refrenceNumber.equals(that.refrenceNumber) : that.refrenceNumber != null)
             return false;
         if (sign != null ? !sign.equals(that.sign) : that.sign != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        return !(paymentMethod != null ? !paymentMethod.equals(that.paymentMethod) : that.paymentMethod != null);
 
-        return true;
     }
 
     @Override
@@ -96,6 +107,7 @@ public class TransactionDetails implements Serializable {
         result = 31 * result + (refrenceNumber != null ? refrenceNumber.hashCode() : 0);
         result = 31 * result + (sign != null ? sign.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (paymentMethod != null ? paymentMethod.hashCode() : 0);
         return result;
     }
 }

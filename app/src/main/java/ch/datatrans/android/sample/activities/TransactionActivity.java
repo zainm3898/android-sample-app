@@ -72,6 +72,8 @@ public class TransactionActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_menu_send:
 
+                // TODO - check if selected payment method is of type credit card.
+                // TODO - if not, do not offer the "scan" option
                 new MaterialDialog.Builder(this)
                         .title(R.string.authorisation_method)
                         .items(R.array.authorisation_methods)
@@ -169,7 +171,7 @@ public class TransactionActivity extends ActionBarActivity {
         startTransaction(transactionDetails, null);
     }
 
-    private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard paymentMethod) {
+    private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard scannedCard) {
         Map<String, String> merchantProperties = new HashMap<>();
 
         Payment payment = new Payment(transactionDetails.getMerchantId(),
@@ -182,11 +184,27 @@ public class TransactionActivity extends ActionBarActivity {
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
         PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
 
-        if(paymentMethod != null) {
-            ppa = new PaymentProcessAndroid(dc, payment, paymentMethod);
+        if(transactionDetails.getPaymentMethod() != null && !transactionDetails.getPaymentMethod().isEmpty()) {
+            try {
+                PaymentMethodType paymentMethodType = PaymentMethodType.getPaymentMethodTypeByIdentifier(transactionDetails.getPaymentMethod());
+                PaymentMethod paymentMethod = new PaymentMethod(paymentMethodType);
+                ppa = new PaymentProcessAndroid(dc, payment, paymentMethod);
+            } catch (IllegalArgumentException e) {
+                // do nothing - just proceed with empty payment method
+            }
+        }
+
+        if(scannedCard!=null) {
+            ppa = new PaymentProcessAndroid(dc, payment, scannedCard);
         }
 
         this.transactionDetails = transactionDetails;
+
+        // useAlias
+        //ppa.getPaymentOptions().setRecurringPayment(true);
+
+        // CAA
+        //ppa.getPaymentOptions().setAutoSettlement(true);
 
         ppa.setTestingEnabled(true);
         ppa.getPaymentOptions().setCertificatePinning(true);
@@ -199,12 +217,14 @@ public class TransactionActivity extends ActionBarActivity {
         String amount = ((EditText) findViewById(R.id.et_amount)).getText().toString();
         String currency = ((EditText) findViewById(R.id.et_currency)).getText().toString();
         String referenceNumber = ((EditText) findViewById(R.id.et_refrence_number)).getText().toString();
+        String paymentMethod = ((EditText) findViewById(R.id.et_payment_method)).getText().toString();
         String sign = ((EditText) findViewById(R.id.et_sign)).getText().toString();
 
         return new TransactionDetails(merchantID,
                 TextUtils.isEmpty(amount) ? Integer.parseInt(DefaultPaymentInformation.AMOUNT) : Integer.parseInt(amount),
                 currency,
                 referenceNumber,
+                paymentMethod,
                 sign);
     }
 
