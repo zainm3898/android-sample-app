@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
