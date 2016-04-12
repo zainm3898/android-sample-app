@@ -37,7 +37,7 @@ public class TransactionOverviewListAdapter extends RecyclerView.Adapter<Transac
 
     private enum StatusColor {
 
-        COMPLETED("#009957"), CANCELED("#FFB402"), ERROR("#D94530");
+        BEFORE_COMPLETION("#FFB402"), COMPLETED("#009957"), CANCELED("#FFB402"), ERROR("#D94530");
 
         private final String color;
 

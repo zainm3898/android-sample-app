@@ -16,11 +16,13 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
+import ch.datatrans.android.sample.model.Transaction;
 import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.Payment;
@@ -146,7 +148,7 @@ public class TransactionActivity extends ActionBarActivity {
                                             Integer.parseInt(getText(R.id.et_expiry_year, view)),
                                             Integer.parseInt(getText(R.id.et_expiry_month, view)),
                                             Integer.parseInt(getText(R.id.et_cvv, view)),
-                                            "Test Payment");
+                                            null);
 
                                     dialog.dismiss();
                                     startTransaction(getPaymentInformation(), paymentMethod);
@@ -172,14 +174,12 @@ public class TransactionActivity extends ActionBarActivity {
     }
 
     private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard scannedCard) {
-        Map<String, String> merchantProperties = new HashMap<>();
-
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
                 transactionDetails.getAmount(),
                 transactionDetails.getSign(),
-                merchantProperties);
+                Collections.EMPTY_MAP);
 
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
         PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
@@ -206,6 +206,9 @@ public class TransactionActivity extends ActionBarActivity {
         // CAA
         //ppa.getPaymentOptions().setAutoSettlement(true);
 
+        // this invokes the 'BEFORE_COMPLETION' callback which allows the user to show
+        // a custom confirmation screen/dialog
+        ppa.setManualCompletionEnabled(true);
         ppa.setTestingEnabled(true);
         ppa.getPaymentOptions().setCertificatePinning(true);
         ppa.addStateListener(paymentProcessStateListener);
@@ -259,11 +262,42 @@ public class TransactionActivity extends ActionBarActivity {
     class PaymentProcessStateListener implements IPaymentProcessStateListener {
 
         @Override
-        public void paymentProcessStateChanged(PaymentProcessAndroid paymentProcess) {
+        public void paymentProcessStateChanged(final PaymentProcessAndroid paymentProcess) {
             PaymentProcessState state = paymentProcess.getState();
             Log.d(TAG, state.toString());
 
             switch (state) {
+                case BEFORE_COMPLETION:
+                    TransactionActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MaterialDialog dialog = new MaterialDialog.Builder(TransactionActivity.this)
+                                    .icon(getResources().getDrawable(R.drawable.ic_credit_card))
+                                    .autoDismiss(false)
+                                    .negativeText("Cancel")
+                                    .content("Please confirm payment of " + transactionDetails.getCurrency() + " " + Transaction.getFormattedAmount(transactionDetails.getAmount()))
+                                    .positiveText(R.string.cc_details_ok)
+                                    .callback(new MaterialDialog.ButtonCallback() {
+                                        @Override
+                                        public void onPositive(MaterialDialog dialog) {
+                                            paymentProcess.complete();
+                                            dialog.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onNegative(MaterialDialog dialog) {
+                                            paymentProcess.cancel();
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .build();
+
+                            dialog.show();
+
+                        }
+                    });
+                    break;
+
                 case COMPLETED:
                     showToast("Transaction completed successfully!");
                     saveTransaction(state);

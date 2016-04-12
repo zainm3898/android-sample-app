@@ -45,6 +45,10 @@ public class Transaction {
     }
 
     public String getFormattedAmount() {
+        return Transaction.getFormattedAmount(amount);
+    }
+
+    public static String getFormattedAmount(long amount) {
         StringBuilder formattedAmount = new StringBuilder(String.valueOf(amount));
 
         if (formattedAmount.length() == 1) {
