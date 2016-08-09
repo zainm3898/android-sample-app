@@ -16,13 +16,17 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.ResourceProvider;
 import ch.datatrans.android.sample.model.Transaction;
 import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
+import ch.datatrans.payment.AliasPaymentMethod;
+import ch.datatrans.payment.AliasPaymentMethodCreditCard;
+import ch.datatrans.payment.AliasRequest;
 import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
@@ -31,6 +35,7 @@ import ch.datatrans.payment.PaymentProcessState;
 import ch.datatrans.payment.android.DisplayContext;
 import ch.datatrans.payment.android.IPaymentProcessStateListener;
 import ch.datatrans.payment.android.PaymentProcessAndroid;
+import ch.twint.payment.sdk.TwintEnvironment;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 
@@ -141,12 +146,28 @@ public class TransactionActivity extends ActionBarActivity {
                                 PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(scanResult.getCardType().name());
 
                                 try {
-                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
-                                            getText(R.id.et_card_number, view),
-                                            Integer.parseInt(getText(R.id.et_expiry_year, view)),
-                                            Integer.parseInt(getText(R.id.et_expiry_month, view)),
-                                            Integer.parseInt(getText(R.id.et_cvv, view)),
-                                            null);
+//                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
+//                                            getText(R.id.et_card_number, view),
+//                                            Integer.parseInt(getText(R.id.et_expiry_year, view)),
+//                                            Integer.parseInt(getText(R.id.et_expiry_month, view)),
+//                                            Integer.parseInt(getText(R.id.et_cvv, view)),
+//                                            null);
+
+//                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(
+//                                            PaymentMethodType.VISA,
+//                                            "4242424242424242",
+//                                            2018,
+//                                            12,
+//                                            123,
+//                                            null);
+                                    AliasPaymentMethod paymentMethod = new AliasPaymentMethodCreditCard(
+                                            PaymentMethodType.VISA,
+                                            "70119122433810042",
+                                            "", // maskedCC - not needed here
+                                            2018,
+                                            12,
+                                            "Firstname Lastname");
+
 
                                     dialog.dismiss();
                                     startTransaction(getPaymentInformation(), paymentMethod);
@@ -171,16 +192,24 @@ public class TransactionActivity extends ActionBarActivity {
         startTransaction(transactionDetails, null);
     }
 
-    private void startTransaction(TransactionDetails transactionDetails, PaymentMethodCreditCard scannedCard) {
+    private void startTransaction(TransactionDetails transactionDetails, PaymentMethod scannedCard) {
+        Map<String, String> merchantProperties = new HashMap<>();
+        merchantProperties.put("uppRememberMe", "yes");
+        merchantProperties.put("twintForceWebAlias", "yes");
+
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
                 transactionDetails.getAmount(),
                 transactionDetails.getSign(),
-                Collections.EMPTY_MAP);
+                merchantProperties);
 
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
-        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
+        //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
+
+        AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), merchantProperties);
+        //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), PaymentMethod.createMethod(PaymentMethodType.TWINT), null);
+        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, ar);
 
         if(transactionDetails.getPaymentMethod() != null && !transactionDetails.getPaymentMethod().isEmpty()) {
             try {
@@ -206,7 +235,13 @@ public class TransactionActivity extends ActionBarActivity {
 
         // this invokes the 'BEFORE_COMPLETION' callback which allows the user to show
         // a custom confirmation screen/dialog
-        ppa.setManualCompletionEnabled(true);
+        //ppa.setManualCompletionEnabled(true);
+
+        // activate split mode. use transactionId from callback to complete transaction
+        //ppa.getPaymentOptions().setSkipAuthorizationCompletion(true);
+
+        ppa.getPaymentOptions().setTWINTEnvironment(TwintEnvironment.INT);
+
         ppa.setTestingEnabled(true);
         ppa.getPaymentOptions().setCertificatePinning(true);
         ppa.addStateListener(paymentProcessStateListener);
@@ -261,6 +296,7 @@ public class TransactionActivity extends ActionBarActivity {
 
         @Override
         public void paymentProcessStateChanged(final PaymentProcessAndroid paymentProcess) {
+
             PaymentProcessState state = paymentProcess.getState();
             Log.d(TAG, state.toString());
 
@@ -297,7 +333,28 @@ public class TransactionActivity extends ActionBarActivity {
                     break;
 
                 case COMPLETED:
-                    showToast("Transaction completed successfully!");
+                    StringBuilder successMessage = new StringBuilder("Transaction completed successfully!");
+
+                    if(paymentProcess.getAliasPaymentMethod() instanceof AliasPaymentMethod) {
+
+                        AliasPaymentMethod aliasPaymentMethod = paymentProcess.getAliasPaymentMethod();
+                        String alias = aliasPaymentMethod.getAlias();
+                        successMessage.append("\naliasCC="+alias);
+
+                        if(aliasPaymentMethod instanceof  AliasPaymentMethodCreditCard) {
+                            AliasPaymentMethodCreditCard aliasPaymentMethodCreditCard = (AliasPaymentMethodCreditCard)aliasPaymentMethod;
+
+                            String cardHolder =  aliasPaymentMethodCreditCard.getCardHolder();
+                            if(cardHolder != null && !cardHolder.isEmpty()) {
+                                String firstname = cardHolder.split(" ")[0].replace("+"," ");
+                                String lastname = cardHolder.substring(firstname.length() + 1).replace("+"," ");
+                                successMessage.append("\nfirstname=" + firstname + ", lastname=" + lastname);
+                            }
+                        }
+
+                    }
+
+                    showToast(successMessage.toString());
                     saveTransaction(state);
                     break;
                 case CANCELED:
