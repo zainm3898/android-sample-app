@@ -146,28 +146,12 @@ public class TransactionActivity extends ActionBarActivity {
                                 PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(scanResult.getCardType().name());
 
                                 try {
-//                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
-//                                            getText(R.id.et_card_number, view),
-//                                            Integer.parseInt(getText(R.id.et_expiry_year, view)),
-//                                            Integer.parseInt(getText(R.id.et_expiry_month, view)),
-//                                            Integer.parseInt(getText(R.id.et_cvv, view)),
-//                                            null);
-
-//                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(
-//                                            PaymentMethodType.VISA,
-//                                            "4242424242424242",
-//                                            2018,
-//                                            12,
-//                                            123,
-//                                            null);
-                                    AliasPaymentMethod paymentMethod = new AliasPaymentMethodCreditCard(
-                                            PaymentMethodType.VISA,
-                                            "70119122433810042",
-                                            "", // maskedCC - not needed here
-                                            2018,
-                                            12,
-                                            "Firstname Lastname");
-
+                                    PaymentMethodCreditCard paymentMethod = new PaymentMethodCreditCard(paymentMethodType,
+                                            getText(R.id.et_card_number, view),
+                                            Integer.parseInt(getText(R.id.et_expiry_year, view)),
+                                            Integer.parseInt(getText(R.id.et_expiry_month, view)),
+                                            Integer.parseInt(getText(R.id.et_cvv, view)),
+                                            null);
 
                                     dialog.dismiss();
                                     startTransaction(getPaymentInformation(), paymentMethod);
@@ -194,8 +178,8 @@ public class TransactionActivity extends ActionBarActivity {
 
     private void startTransaction(TransactionDetails transactionDetails, PaymentMethod scannedCard) {
         Map<String, String> merchantProperties = new HashMap<>();
-        merchantProperties.put("uppRememberMe", "yes");
-        merchantProperties.put("twintForceWebAlias", "yes");
+        //merchantProperties.put("uppRememberMe", "yes");
+        //merchantProperties.put("twintForceWebAlias", "yes");
 
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
@@ -205,11 +189,19 @@ public class TransactionActivity extends ActionBarActivity {
                 merchantProperties);
 
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
-        //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
 
-        AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), merchantProperties);
+
+        //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), "CHF", merchantProperties);
         //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), PaymentMethod.createMethod(PaymentMethodType.TWINT), null);
-        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, ar);
+
+        // normal payment
+        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
+
+        // payment with alias request (uppAliasOnly / amount=0) for registrations only
+        //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, ar);
+
+        // payment with aliasCC
+        //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment, new AliasPaymentMethodCreditCard(PaymentMethodType.VISA, "70119122433810042", "", 2018, 12, "DME"));
 
         if(transactionDetails.getPaymentMethod() != null && !transactionDetails.getPaymentMethod().isEmpty()) {
             try {
@@ -338,11 +330,13 @@ public class TransactionActivity extends ActionBarActivity {
                     if(paymentProcess.getAliasPaymentMethod() instanceof AliasPaymentMethod) {
 
                         AliasPaymentMethod aliasPaymentMethod = paymentProcess.getAliasPaymentMethod();
+
                         String alias = aliasPaymentMethod.getAlias();
                         successMessage.append("\naliasCC="+alias);
 
                         if(aliasPaymentMethod instanceof  AliasPaymentMethodCreditCard) {
                             AliasPaymentMethodCreditCard aliasPaymentMethodCreditCard = (AliasPaymentMethodCreditCard)aliasPaymentMethod;
+
 
                             String cardHolder =  aliasPaymentMethodCreditCard.getCardHolder();
                             if(cardHolder != null && !cardHolder.isEmpty()) {
@@ -363,6 +357,8 @@ public class TransactionActivity extends ActionBarActivity {
                     break;
                 case ERROR:
                     showToast("An error occurred!");
+
+
                     Log.e(TAG, paymentProcess.getException().getMessage());
                     saveTransaction(state);
                     break;
