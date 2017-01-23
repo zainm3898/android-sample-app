@@ -95,7 +95,7 @@
         android:layout_below="@+id/et_payment_method"
         android:ems="10"
         android:hint="Sign"
-        android:inputType="number"
+        android:inputType="text"
         app:floatingLabel="normal"
         android:textColorHint="#B7B8B8" />
 
