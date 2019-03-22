@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +16,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ch.datatrans.android.sample.R;
@@ -26,7 +28,6 @@ import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.AliasPaymentMethod;
 import ch.datatrans.payment.AliasPaymentMethodCreditCard;
-import ch.datatrans.payment.AliasRequest;
 import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
@@ -39,7 +40,7 @@ import ch.twint.payment.sdk.TwintEnvironment;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 
-public class TransactionActivity extends ActionBarActivity {
+public class TransactionActivity extends AppCompatActivity {
 
     public final static String TAG = TransactionActivity.class.getName();
     private final static int MY_SCAN_REQUEST_CODE = 1337;
@@ -178,8 +179,8 @@ public class TransactionActivity extends ActionBarActivity {
 
     private void startTransaction(TransactionDetails transactionDetails, PaymentMethod scannedCard) {
         Map<String, String> merchantProperties = new HashMap<>();
-        //merchantProperties.put("uppRememberMe", "yes");
-        //merchantProperties.put("twintForceWebAlias", "yes");
+        //merchantProperties.put("param1", "value1");
+        //merchantProperties.put("param2", "value2");
 
         Payment payment = new Payment(transactionDetails.getMerchantId(),
                 transactionDetails.getRefrenceNumber(),
@@ -190,14 +191,19 @@ public class TransactionActivity extends ActionBarActivity {
 
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
 
-
-        //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), "CHF", merchantProperties);
-        //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), PaymentMethod.createMethod(PaymentMethodType.TWINT), null);
+        List<PaymentMethod> paymentMethods = new ArrayList<>();
+        paymentMethods.add(PaymentMethod.createMethod(PaymentMethodType.VISA));
+        paymentMethods.add(PaymentMethod.createMethod(PaymentMethodType.MASTERCARD));
+        paymentMethods.add(PaymentMethod.createMethod(PaymentMethodType.AMEX));
+        paymentMethods.add(PaymentMethod.createMethod(PaymentMethodType.PFCARD));
+        paymentMethods.add(PaymentMethod.createMethod(PaymentMethodType.PAYPAL));
 
         // normal payment
-        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment);
+        PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment, paymentMethods);
 
-        // payment with alias request (uppAliasOnly / amount=0) for registrations only
+        // payment with alias request for registrations only
+        //AliasRequest ar = new AliasRequest(transactionDetails.getMerchantId(), "CHF", paymentMethods);
+
         //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, ar);
 
         // payment with aliasCC
@@ -220,6 +226,7 @@ public class TransactionActivity extends ActionBarActivity {
         this.transactionDetails = transactionDetails;
 
         // useAlias
+        // https://docs.datatrans.ch/docs/payment-process-alias
         //ppa.getPaymentOptions().setRecurringPayment(true);
 
         // CAA
@@ -230,6 +237,7 @@ public class TransactionActivity extends ActionBarActivity {
         //ppa.setManualCompletionEnabled(true);
 
         // activate split mode. use transactionId from callback to complete transaction
+        // https://docs.datatrans.ch/docs/integrations-split-mode#section-finalize-the-authorization
         //ppa.getPaymentOptions().setSkipAuthorizationCompletion(true);
 
         ppa.getPaymentOptions().setTWINTEnvironment(TwintEnvironment.INT);

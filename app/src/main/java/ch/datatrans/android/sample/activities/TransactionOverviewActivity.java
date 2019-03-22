@@ -2,7 +2,7 @@ package ch.datatrans.android.sample.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -11,7 +11,7 @@ import ch.datatrans.android.sample.R;
 import ch.datatrans.android.sample.adapters.TransactionOverviewListAdapter;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 
-public class TransactionOverviewActivity extends ActionBarActivity implements View.OnClickListener {
+public class TransactionOverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TransactionsDataSource transactionsDataSource;
 
