@@ -11,6 +11,7 @@ public class TransactionDetails implements Serializable {
     private String sign;
     private String status;
     private String paymentMethod;
+    private String aliasCC;
 
     // TODO - builder
     public TransactionDetails(String merchantId, int amount, String currency, String refrenceNumber, String paymentMethod, String sign) {
@@ -78,6 +79,17 @@ public class TransactionDetails implements Serializable {
         this.paymentMethod = paymentMethod;
     }
 
+    public String getAliasCC() {
+        if(null == aliasCC || "".equals(aliasCC)) {
+            return "n/a";
+        }
+
+        return aliasCC;
+    }
+
+    public void setAliasCC(String aliasCC) {
+        this.aliasCC = aliasCC;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -87,27 +99,26 @@ public class TransactionDetails implements Serializable {
         TransactionDetails that = (TransactionDetails) o;
 
         if (amount != that.amount) return false;
-        if (merchantId != null ? !merchantId.equals(that.merchantId) : that.merchantId != null)
-            return false;
-        if (currency != null ? !currency.equals(that.currency) : that.currency != null)
-            return false;
-        if (refrenceNumber != null ? !refrenceNumber.equals(that.refrenceNumber) : that.refrenceNumber != null)
-            return false;
+        if (!merchantId.equals(that.merchantId)) return false;
+        if (!currency.equals(that.currency)) return false;
+        if (!refrenceNumber.equals(that.refrenceNumber)) return false;
         if (sign != null ? !sign.equals(that.sign) : that.sign != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        return !(paymentMethod != null ? !paymentMethod.equals(that.paymentMethod) : that.paymentMethod != null);
-
+        if (!status.equals(that.status)) return false;
+        if (paymentMethod != null ? !paymentMethod.equals(that.paymentMethod) : that.paymentMethod != null)
+            return false;
+        return aliasCC != null ? aliasCC.equals(that.aliasCC) : that.aliasCC == null;
     }
 
     @Override
     public int hashCode() {
-        int result = merchantId != null ? merchantId.hashCode() : 0;
+        int result = merchantId.hashCode();
         result = 31 * result + amount;
-        result = 31 * result + (currency != null ? currency.hashCode() : 0);
-        result = 31 * result + (refrenceNumber != null ? refrenceNumber.hashCode() : 0);
+        result = 31 * result + currency.hashCode();
+        result = 31 * result + refrenceNumber.hashCode();
         result = 31 * result + (sign != null ? sign.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + status.hashCode();
         result = 31 * result + (paymentMethod != null ? paymentMethod.hashCode() : 0);
+        result = 31 * result + (aliasCC != null ? aliasCC.hashCode() : 0);
         return result;
     }
 }

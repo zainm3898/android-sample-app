@@ -14,6 +14,7 @@ public class TransactionsSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CURRENCY = "currency";
     public static final String COLUMN_AMOUNT = "amount";
     public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_ALIAS = "alias";
     public static final String COLUMN_TIMESTAMP = "timestamp";
 
     private static final String DATABASE_NAME = "transactions_history.db";
@@ -25,6 +26,7 @@ public class TransactionsSQLiteHelper extends SQLiteOpenHelper {
                                                     COLUMN_REFERENCE_NUMBER + " text not null, " +
                                                     COLUMN_CURRENCY + " text not null, " +
                                                     COLUMN_STATUS + " text not null, " +
+                                                    COLUMN_ALIAS + " text not null, " +
                                                     COLUMN_AMOUNT + " integer not null, " +
                                                     COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL" +
                                                   ");";

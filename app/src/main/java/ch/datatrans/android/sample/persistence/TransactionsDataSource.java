@@ -23,6 +23,7 @@ public class TransactionsDataSource {
                                     TransactionsSQLiteHelper.COLUMN_CURRENCY,
                                     TransactionsSQLiteHelper.COLUMN_AMOUNT,
                                     TransactionsSQLiteHelper.COLUMN_STATUS,
+                                    TransactionsSQLiteHelper.COLUMN_ALIAS,
                                     TransactionsSQLiteHelper.COLUMN_TIMESTAMP};
 
     public TransactionsDataSource(Context context) {
@@ -46,7 +47,7 @@ public class TransactionsDataSource {
         values.put(TransactionsSQLiteHelper.COLUMN_CURRENCY , transactionDetails.getCurrency());
         values.put(TransactionsSQLiteHelper.COLUMN_AMOUNT , transactionDetails.getAmount());
         values.put(TransactionsSQLiteHelper.COLUMN_STATUS , transactionDetails.getStatus());
-
+        values.put(TransactionsSQLiteHelper.COLUMN_ALIAS , transactionDetails.getAliasCC());
 
         database.insert(TransactionsSQLiteHelper.TABLE_TRANSACTIONS, null, values);
     }
@@ -74,7 +75,8 @@ public class TransactionsDataSource {
         transaction.setCurrency(cursor.getString(3));
         transaction.setAmount(cursor.getLong(4));
         transaction.setStatus(cursor.getString(5));
-        transaction.setTimestamp(Timestamp.valueOf(cursor.getString(6)).getTime());
+        transaction.setAlias(cursor.getString(6));
+        transaction.setTimestamp(Timestamp.valueOf(cursor.getString(7)).getTime());
         return transaction;
     }
 

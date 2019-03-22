@@ -11,6 +11,7 @@ public class Transaction {
     private long amount;
     private String status;
     private long timestamp;
+    private String alias;
 
     public long getMerchantId() {
         return merchantId;
@@ -96,17 +97,28 @@ public class Transaction {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Transaction{");
-        sb.append("merchantId=").append(merchantId);
-        sb.append(", referenceNumber='").append(referenceNumber).append('\'');
-        sb.append(", currency='").append(currency).append('\'');
-        sb.append(", amount=").append(amount);
-        sb.append(", status='").append(status).append('\'');
-        sb.append(", timestamp=").append(timestamp);
-        sb.append('}');
-        return sb.toString();
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "merchantId=" + merchantId +
+                ", referenceNumber='" + referenceNumber + '\'' +
+                ", currency='" + currency + '\'' +
+                ", amount=" + amount +
+                ", status='" + status + '\'' +
+                ", timestamp=" + timestamp +
+                ", alias='" + alias + '\'' +
+                '}';
+    }
 }

@@ -23,6 +23,7 @@ public class TransactionOverviewListAdapter extends RecyclerView.Adapter<Transac
         public TextView mAmount;
         public TextView mDate;
         public TextView mStatus;
+        public TextView mAlias;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -32,6 +33,7 @@ public class TransactionOverviewListAdapter extends RecyclerView.Adapter<Transac
             mAmount = (TextView) itemView.findViewById(R.id.tv_amount);
             mDate = (TextView) itemView.findViewById(R.id.tv_date);
             mStatus = (TextView) itemView.findViewById(R.id.tv_status);
+            mAlias = (TextView) itemView.findViewById(R.id.tv_alias);
         }
     }
 
@@ -70,6 +72,7 @@ public class TransactionOverviewListAdapter extends RecyclerView.Adapter<Transac
         holder.mStatus.setText(status);
 
         holder.mStatus.setBackgroundColor(Color.parseColor(StatusColor.valueOf(status).color));
+        holder.mAlias.setText(String.valueOf(mDataset.get(position).getAlias()));
     }
 
     @Override

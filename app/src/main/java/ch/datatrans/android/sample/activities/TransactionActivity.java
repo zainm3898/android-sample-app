@@ -28,6 +28,7 @@ import ch.datatrans.android.sample.model.TransactionDetails;
 import ch.datatrans.android.sample.persistence.TransactionsDataSource;
 import ch.datatrans.payment.AliasPaymentMethod;
 import ch.datatrans.payment.AliasPaymentMethodCreditCard;
+import ch.datatrans.payment.AliasPaymentMethodPostFinanceCard;
 import ch.datatrans.payment.Payment;
 import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
@@ -51,7 +52,7 @@ public class TransactionActivity extends AppCompatActivity {
 
     interface DefaultPaymentInformation {
         String MERCHANT_ID = "1100004450";
-        String AMOUNT = "10";
+        String AMOUNT = "1000";
         String CURRENCY = "CHF";
         String REFERENCE_NUMBER = "968927";
         String SIGN = "30916165706580013";
@@ -227,7 +228,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         // useAlias
         // https://docs.datatrans.ch/docs/payment-process-alias
-        //ppa.getPaymentOptions().setRecurringPayment(true);
+        ppa.getPaymentOptions().setRecurringPayment(true);
 
         // CAA
         //ppa.getPaymentOptions().setAutoSettlement(true);
@@ -239,6 +240,9 @@ public class TransactionActivity extends AppCompatActivity {
         // activate split mode. use transactionId from callback to complete transaction
         // https://docs.datatrans.ch/docs/integrations-split-mode#section-finalize-the-authorization
         //ppa.getPaymentOptions().setSkipAuthorizationCompletion(true);
+
+        // used to ensure a proper switch back to the app
+        ppa.getPaymentOptions().setAppCallbackScheme("ch.datatrans.android.sample");
 
         ppa.getPaymentOptions().setTWINTEnvironment(TwintEnvironment.INT);
 
@@ -334,22 +338,27 @@ public class TransactionActivity extends AppCompatActivity {
 
                 case COMPLETED:
                     StringBuilder successMessage = new StringBuilder("Transaction completed successfully!");
+                    String alias = null;
 
-                    if(paymentProcess.getAliasPaymentMethod() instanceof AliasPaymentMethod) {
+                    PaymentMethodType paymentMethodType = PaymentMethodType.getPaymentMethodTypeByIdentifier("INT");
 
+                    if (paymentProcess.getAliasPaymentMethod() != null) {
                         AliasPaymentMethod aliasPaymentMethod = paymentProcess.getAliasPaymentMethod();
+                        alias = aliasPaymentMethod.getAlias();
+                        successMessage.append("\naliasCC=" + alias);
 
-                        String alias = aliasPaymentMethod.getAlias();
-                        successMessage.append("\naliasCC="+alias);
+                        Log.i(TAG, "received AliasPaymentMethod:");
+                        Log.i(TAG, "\tcredit card: " + ((aliasPaymentMethod instanceof AliasPaymentMethodCreditCard) ? "yes" : "no"));
+                        Log.i(TAG, "\tpf card: " + ((aliasPaymentMethod instanceof AliasPaymentMethodPostFinanceCard) ? "yes" : "no"));
+                        Log.i(TAG, "\ttype: " + aliasPaymentMethod.getType());
+                        Log.i(TAG, "\ttype/name: " + aliasPaymentMethod.getType().getName());
 
-                        if(aliasPaymentMethod instanceof  AliasPaymentMethodCreditCard) {
-                            AliasPaymentMethodCreditCard aliasPaymentMethodCreditCard = (AliasPaymentMethodCreditCard)aliasPaymentMethod;
-
-
-                            String cardHolder =  aliasPaymentMethodCreditCard.getCardHolder();
-                            if(cardHolder != null && !cardHolder.isEmpty()) {
-                                String firstname = cardHolder.split(" ")[0].replace("+"," ");
-                                String lastname = cardHolder.substring(firstname.length() + 1).replace("+"," ");
+                        if (aliasPaymentMethod instanceof AliasPaymentMethodCreditCard) {
+                            AliasPaymentMethodCreditCard aliasPaymentMethodCreditCard = (AliasPaymentMethodCreditCard) aliasPaymentMethod;
+                            String cardHolder = aliasPaymentMethodCreditCard.getCardHolder();
+                            if (cardHolder != null && !cardHolder.isEmpty()) {
+                                String firstname = cardHolder.split(" ")[0].replace("+", " ");
+                                String lastname = cardHolder.substring(firstname.length() + 1).replace("+", " ");
                                 successMessage.append("\nfirstname=" + firstname + ", lastname=" + lastname);
                             }
                         }
@@ -357,7 +366,7 @@ public class TransactionActivity extends AppCompatActivity {
                     }
 
                     showToast(successMessage.toString());
-                    saveTransaction(state);
+                    saveTransaction(state, alias);
                     break;
                 case CANCELED:
                     showToast("Transaction canceled!");
@@ -373,11 +382,16 @@ public class TransactionActivity extends AppCompatActivity {
             }
         }
 
-        private void saveTransaction(PaymentProcessState state) {
+        private void saveTransaction(PaymentProcessState state, String alias) {
             transactionDetails.setStatus(state.name());
+            transactionDetails.setAliasCC(alias);
             transactionsDataSource.open();
             transactionsDataSource.saveTransaction(transactionDetails);
             transactionsDataSource.close();
+        }
+
+        private void saveTransaction(PaymentProcessState state) {
+            saveTransaction(state, null);
         }
 
         private void showToast(final String message) {
