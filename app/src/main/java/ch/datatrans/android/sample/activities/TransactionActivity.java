@@ -34,9 +34,9 @@ import ch.datatrans.payment.PaymentMethod;
 import ch.datatrans.payment.PaymentMethodCreditCard;
 import ch.datatrans.payment.PaymentMethodType;
 import ch.datatrans.payment.PaymentProcessState;
-import ch.datatrans.payment.android.DisplayContext;
-import ch.datatrans.payment.android.IPaymentProcessStateListener;
-import ch.datatrans.payment.android.PaymentProcessAndroid;
+import ch.datatrans.payment.DisplayContext;
+import ch.datatrans.payment.IPaymentProcessStateListener;
+import ch.datatrans.payment.PaymentProcessAndroid;
 import ch.twint.payment.sdk.TwintEnvironment;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
@@ -187,8 +187,7 @@ public class TransactionActivity extends AppCompatActivity {
                 transactionDetails.getRefrenceNumber(),
                 transactionDetails.getCurrency(),
                 transactionDetails.getAmount(),
-                transactionDetails.getSign(),
-                merchantProperties);
+                transactionDetails.getSign());
 
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
 
@@ -240,6 +239,9 @@ public class TransactionActivity extends AppCompatActivity {
         // activate split mode. use transactionId from callback to complete transaction
         // https://docs.datatrans.ch/docs/integrations-split-mode#section-finalize-the-authorization
         //ppa.getPaymentOptions().setSkipAuthorizationCompletion(true);
+
+        // send custom merchant properties
+        ppa.getPaymentOptions().getMerchantProperties().putAll(merchantProperties);
 
         // used to ensure a proper switch back to the app
         ppa.getPaymentOptions().setAppCallbackScheme("ch.datatrans.android.sample");

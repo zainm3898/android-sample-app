@@ -2,7 +2,7 @@ package ch.datatrans.android.sample;
 
 import android.content.Context;
 
-import ch.datatrans.payment.android.IResourceProvider;
+import ch.datatrans.payment.IResourceProvider;
 
 public class ResourceProvider implements IResourceProvider {
 
