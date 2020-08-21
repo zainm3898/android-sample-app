@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- showcasing a custom translation for the "Transmitting..." Dialog for language=fr -->
+    <string name="nw_indicator_message">Transmission en cours... Yay!</string>
+</resources>

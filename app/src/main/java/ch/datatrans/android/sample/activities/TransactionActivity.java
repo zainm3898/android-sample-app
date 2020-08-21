@@ -2,6 +2,9 @@ package ch.datatrans.android.sample.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +22,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import ch.datatrans.android.sample.R;
@@ -189,6 +193,9 @@ public class TransactionActivity extends AppCompatActivity {
                 transactionDetails.getAmount(),
                 transactionDetails.getSign());
 
+        // set a custom language if needed
+        //setCustomLanguage("fr", this);
+
         DisplayContext dc = new DisplayContext(new ResourceProvider(), this);
 
         List<PaymentMethod> paymentMethods = new ArrayList<>();
@@ -209,7 +216,7 @@ public class TransactionActivity extends AppCompatActivity {
         // payment with aliasCC
         //PaymentProcessAndroid ppa = new PaymentProcessAndroid(dc, payment, new AliasPaymentMethodCreditCard(PaymentMethodType.VISA, "70119122433810042", "", 2018, 12, "DME"));
 
-        if(transactionDetails.getPaymentMethod() != null && !transactionDetails.getPaymentMethod().isEmpty()) {
+        if (transactionDetails.getPaymentMethod() != null && !transactionDetails.getPaymentMethod().isEmpty()) {
             try {
                 PaymentMethodType paymentMethodType = PaymentMethodType.getPaymentMethodTypeByIdentifier(transactionDetails.getPaymentMethod());
                 PaymentMethod paymentMethod = new PaymentMethod(paymentMethodType);
@@ -219,7 +226,7 @@ public class TransactionActivity extends AppCompatActivity {
             }
         }
 
-        if(scannedCard!=null) {
+        if (scannedCard != null) {
             ppa = new PaymentProcessAndroid(dc, payment, scannedCard);
         }
 
@@ -246,6 +253,7 @@ public class TransactionActivity extends AppCompatActivity {
         // used to ensure a proper switch back to the app
         ppa.getPaymentOptions().setAppCallbackScheme("ch.datatrans.android.sample");
 
+        // set correct TWINT environment
         ppa.getPaymentOptions().setTWINTEnvironment(TwintEnvironment.INT);
 
         ppa.setTestingEnabled(true);
@@ -287,7 +295,7 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
     private String getText(int id, View view) {
-        return ((EditText)view.findViewById(id)).getText().toString();
+        return ((EditText) view.findViewById(id)).getText().toString();
     }
 
     private void autofillPaymentInformation() {
@@ -296,6 +304,23 @@ public class TransactionActivity extends AppCompatActivity {
         setText(R.id.et_currency, DefaultPaymentInformation.CURRENCY);
         setText(R.id.et_refrence_number, DefaultPaymentInformation.REFERENCE_NUMBER);
         setText(R.id.et_sign, DefaultPaymentInformation.SIGN);
+    }
+
+    private void setCustomLanguage(String language, Context context) {
+        Locale locale = new Locale(language);
+
+        // Resources (SDK dialogs):
+        Resources resources = context.getResources();
+        Configuration configuration = resources.getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            configuration.setLocale(locale);
+        } else {
+            configuration.locale = locale;
+        }
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+        // Locale (SDK string representations + webview):
+        Locale.setDefault(locale);
     }
 
     class PaymentProcessStateListener implements IPaymentProcessStateListener {
@@ -404,6 +429,7 @@ public class TransactionActivity extends AppCompatActivity {
                 }
             });
         }
+
     }
 
 }
