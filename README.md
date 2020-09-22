@@ -1,7 +1,7 @@
 ## android-sample-app
 sample android app which integrates the datatrans library
 
-![app screenshots](/static/1337.png)
+![app screenshots](/static/datatrans-android-sample-app-screenshots.png)
 
 ### Build & Installation
 ```bash
