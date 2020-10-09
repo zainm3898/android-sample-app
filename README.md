@@ -12,7 +12,7 @@ $ adb install -r app/build/outputs/apk/app-debug.apk
 [datatrans-android-sample.apk](https://github.com/datatrans/android-sample-app/raw/master/static/datatrans-android-sample.apk)
 
 ### Documentation
-- [Dev guide](https://pilot.datatrans.biz/showcase/doc/Android_Developers_Manual.pdf)
-- [Release notes](https://pilot.datatrans.biz/showcase/doc/Android_Release_Notes.pdf)
+- [Dev guide](https://admin.sandbox.datatrans.com/showcase/doc/Android_Developers_Manual.pdf)
+- [Release notes](https://admin.sandbox.datatrans.com/showcase/doc/Android_Release_Notes.pdf)
 
 Note: Please don't use the code from this sample in production.
