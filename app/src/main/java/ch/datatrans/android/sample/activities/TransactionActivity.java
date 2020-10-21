@@ -241,7 +241,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         // this invokes the 'BEFORE_COMPLETION' callback which allows the user to show
         // a custom confirmation screen/dialog
-        //ppa.setManualCompletionEnabled(true);
+        ppa.setManualCompletionEnabled(true);
 
         // activate split mode. use transactionId from callback to complete transaction
         // https://docs.datatrans.ch/docs/integrations-split-mode#section-finalize-the-authorization
